@@ -556,41 +556,87 @@ footer a:hover { color: var(--text); }
 }
 
 /* ---------- 11. 일하자 ---------- */
+/* 기둥(.stem)과 떨어지는 깃 조각(.flag)으로 구성.
+   조각은 기둥 왼쪽 위의 1/4 타원 부분까지 포함하고, 기둥은 그만큼 파여 있음 */
 
 .s11 .stem {
+	--seam-w: .22cqw;
+	--line: color-mix(in srgb, var(--ink) 62%, var(--paper));
+	--panel: color-mix(in srgb, var(--ink) 95%, var(--paper));
 	position: relative;
-	left: 8.95cqw;
-	width: 18cqw; height: 57cqw;
+	left: 8.9cqw;
+	width: 18cqw; height: 57.5cqw;
+	isolation: isolate;
+}
+.s11 .stem::before {
+	content: "";
+	position: absolute;
+	inset: 0;
 	background:
-		linear-gradient(var(--seam) 0 0) 0 28% / 100% .25cqw no-repeat,
-		linear-gradient(var(--seam) 0 0) 0 68% / 100% .25cqw no-repeat,
-		linear-gradient(var(--seam) 0 0) 26% 0 / .25cqw 100% no-repeat,
+		/* 이음선 */
+		linear-gradient(var(--line) 0 0) 4.75cqw 14.5cqw / var(--seam-w) 43cqw no-repeat,
+		linear-gradient(var(--line) 0 0) 0 35.75cqw / 4.75cqw var(--seam-w) no-repeat,
+		linear-gradient(var(--line) 0 0) 5.5cqw 18.75cqw / 12cqw var(--seam-w) no-repeat,
+		linear-gradient(var(--line) 0 0) 17.3cqw 18.75cqw / var(--seam-w) 21.25cqw no-repeat,
+		linear-gradient(var(--line) 0 0) 4.75cqw 40cqw / 13.25cqw var(--seam-w) no-repeat,
+		linear-gradient(var(--line) 0 0) 4.75cqw 56.2cqw / 13.25cqw var(--seam-w) no-repeat,
+		/* 왼쪽 좁은 판 */
+		linear-gradient(var(--panel) 0 0) 0 14.5cqw / 4.75cqw 43cqw no-repeat,
 		var(--ink);
+	-webkit-mask: radial-gradient(14.75cqw 10.75cqw at -11cqw 0, #0000 98.5%, #000 100%) 0 0 / 100% 4.7cqw no-repeat,
+		radial-gradient(8.25cqw 9.63cqw at -.9cqw 0, #0000 98.5%, #000 100%) 0 4.65cqw / 100% 52.85cqw no-repeat;
+	mask: radial-gradient(14.75cqw 10.75cqw at -11cqw 0, #0000 98.5%, #000 100%) 0 0 / 100% 4.7cqw no-repeat,
+		radial-gradient(8.25cqw 9.63cqw at -.9cqw 0, #0000 98.5%, #000 100%) 0 4.65cqw / 100% 52.85cqw no-repeat;
 }
 .s11 .flag {
 	position: absolute;
-	right: 99%; top: 0; width: 18cqw; height: 22cqw;
-	background: radial-gradient(100% 45% at 0 0, transparent 98.5%, var(--ink) 100%);
-	transform-origin: 100% 100%;
-	animation: s11-fall 5.6s infinite;
+	left: -17.75cqw; top: 0;
+	width: 26cqw; height: 23cqw;
+	background:
+		linear-gradient(var(--ink) 0 0) 0 10.75cqw / 17.75cqw 12.25cqw no-repeat,
+		linear-gradient(var(--ink) 0 0) 6.75cqw 0 / 10.15cqw 10.8cqw no-repeat,
+		radial-gradient(8.25cqw 9.63cqw at 0 0, var(--ink) 98.5%, #0000 100%) 16.85cqw 4.65cqw / 8.25cqw 9.7cqw no-repeat;
+	-webkit-mask: radial-gradient(14.75cqw 10.75cqw at 6.75cqw 0, #0000 99%, #000 100%);
+	mask: radial-gradient(14.75cqw 10.75cqw at 6.75cqw 0, #0000 99%, #000 100%);
+	/* 기둥 뒤에 놓아서 겹치는 부분은 가려지게 함 */
+	z-index: -1;
+	/* 뿔 부분이 기둥에 걸린 지점이 회전축 */
+	transform-origin: 21.75cqw 8.25cqw;
+	animation: s11-fall 5.2s infinite;
 }
-/* 흔들리다가 떨어져서 한 번 튕기고 멈춤 */
+.s11 .flag::after {
+	content: "";
+	position: absolute;
+	left: 17.75cqw; top: 0;
+	width: 8.25cqw; height: 100%;
+	background:
+		linear-gradient(var(--line) 0 0) 2.3cqw 4.65cqw / 5cqw var(--seam-w) no-repeat,
+		radial-gradient(8.25cqw 9.63cqw at -.9cqw 0, #0000 95.5%, var(--line) 96.5%, var(--line) 98.5%, #0000 99.5%) 0 4.65cqw / 100% 9.7cqw no-repeat;
+	animation: s11-crack 5.2s infinite;
+}
+/* 붙어 있는 동안만 보이는 금 */
+@keyframes s11-crack { 0%, 31% { opacity: 1; } 34%, 100% { opacity: 0; } }
+/* 살짝 처짐 → 1초 버팀 → 덜렁 매달림 → 떨어져서 똑바로 섬 → 옆으로 넘어짐 */
 @keyframes s11-fall {
 	0% { translate: 0 0; rotate: 0deg; opacity: 0; }
-	4%, 9% { translate: 0 0; rotate: 0deg; opacity: 1; animation-timing-function: ease-out; }
-	11% { rotate: -8deg; }
-	13% { rotate: -4deg; }
-	15%, 27% { translate: 0 0; rotate: -6deg; animation-timing-function: ease-in; }
-	31% { rotate: -42deg; animation-timing-function: ease-in-out; }
-	35% { rotate: -24deg; animation-timing-function: ease-in-out; }
-	39% { rotate: -38deg; animation-timing-function: ease-in-out; }
-	43% { rotate: -28deg; animation-timing-function: ease-in-out; }
-	47% { rotate: -35deg; animation-timing-function: ease-in-out; }
-	51% { translate: 0 0; rotate: -32deg; animation-timing-function: cubic-bezier(.5, 0, 1, .6); }
-	60% { translate: -4cqw 14.5cqw; rotate: -84deg; animation-timing-function: ease-out; }
-	64% { translate: -8cqw 11cqw; rotate: -96deg; animation-timing-function: ease-in; }
-	68% { translate: -12.5cqw 16cqw; rotate: -106deg; animation-timing-function: ease-out; }
-	70% { translate: -13.5cqw 15.2cqw; rotate: -103deg; animation-timing-function: ease-in; }
-	72%, 92% { translate: -14cqw 16cqw; rotate: -105deg; opacity: 1; }
-	97%, 100% { translate: -14cqw 16cqw; rotate: -105deg; opacity: 0; }
+	3%, 10% { translate: 0 0; rotate: 0deg; opacity: 1; animation-timing-function: ease-out; }
+	11% { rotate: -5.5deg; }
+	12%, 30% { translate: 0 0; rotate: -4deg; animation-timing-function: cubic-bezier(.5, 0, .9, .6); }
+	34.5% { rotate: -58deg; animation-timing-function: ease-in-out; }
+	37.5% { rotate: -45deg; animation-timing-function: ease-in-out; }
+	40% { rotate: -54deg; animation-timing-function: ease-in-out; }
+	42.5% { rotate: -48deg; animation-timing-function: ease-in-out; }
+	45% { translate: 0 0; rotate: -51deg; animation-timing-function: cubic-bezier(.5, 0, 1, .7); }
+	52% { translate: -21.5cqw 27.5cqw; rotate: -90deg; animation-timing-function: ease-out; }
+	53.5% { translate: -21.39cqw 26.27cqw; rotate: -88.5deg; animation-timing-function: ease-in; }
+	55% { translate: -21.5cqw 27.5cqw; rotate: -90deg; }
+	60% { translate: -21.63cqw 28.02cqw; rotate: -92deg; animation-timing-function: ease-in; }
+	63.5% { translate: -27.04cqw 28.89cqw; rotate: -105deg; animation-timing-function: linear; }
+	66% { translate: -32.04cqw 31.66cqw; rotate: -120deg; animation-timing-function: linear; }
+	68% { translate: -36.83cqw 36.56cqw; rotate: -138deg; animation-timing-function: linear; }
+	69.3% { translate: -39.38cqw 41.24cqw; rotate: -152deg; animation-timing-function: linear; }
+	70.5% { translate: -40.54cqw 45.32cqw; rotate: -163.08deg; animation-timing-function: ease-out; }
+	71.5% { translate: -40.38cqw 44.53cqw; rotate: -161deg; animation-timing-function: ease-in; }
+	72.5%, 93% { translate: -40.54cqw 45.32cqw; rotate: -163.08deg; opacity: 1; }
+	98%, 100% { translate: -40.54cqw 45.32cqw; rotate: -163.08deg; opacity: 0; }
 }
