@@ -325,29 +325,81 @@ footer a:hover { color: var(--text); }
 }
 
 /* ---------- 5. 일이 터졌다 ---------- */
+/* 떨다가 움츠림 → 화면 반전 + 폭발 중심 + 충격파 → 파편과 연기 → 빈 화면 */
 
 .s5 .bomb {
+	--boom: 3s;
+	position: relative;
 	display: grid;
 	place-items: center;
 	font-size: 46cqw; font-weight: 900;
+	animation: s5-shake var(--boom) infinite;
 }
 .s5 .bomb > * { grid-area: 1 / 1; }
-/* 기울임꼴이라 글자가 오른쪽으로 치우치므로 중앙으로 보정 */
-.s5 b, .s5 i { position: relative; left: -4.15cqw; top: -1.5cqw; padding: 0 .12em; font-style: italic; }
-.s5 b { animation: s5-whole 3.8s infinite; }
-.s5 i {
-	clip-path: polygon(var(--c));
+/* 효과는 모두 화면 중앙 기준 */
+.s5 .bomb > span, .s5 em {
+	position: absolute;
+	left: 50%; top: 50%;
+	translate: -50% -50%;
 	opacity: 0;
-	animation: s5-fly 3.8s infinite, s5-drop 3.8s infinite;
 }
-.s5 i::before { content: "1"; }
+/* 터지는 순간 화면 전체를 잠깐 반전 */
+.s5 .flash {
+	width: 220cqw; height: 220cqw;
+	background: #fff;
+	mix-blend-mode: difference;
+	animation: s5-flash var(--boom) infinite;
+}
 .s5 .ring {
 	width: 96cqw; aspect-ratio: 1;
 	border: 2.4cqw solid var(--ink-mid);
 	border-radius: 50%;
-	opacity: 0;
-	animation: s5-ring 3.8s infinite;
+	animation: s5-ring var(--boom) infinite;
 }
+.s5 .ring + .ring { border-width: 1cqw; animation-delay: .07s; }
+/* 폭발 중심: 가장자리가 흐린 원이 순식간에 커졌다 사라짐 */
+.s5 .burst {
+	width: 90cqw; height: 90cqw;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, var(--ink) 30%, color-mix(in srgb, var(--ink) 55%, #0000) 55%, #0000 100%);
+	animation: s5-burst var(--boom) infinite;
+}
+/* 사방으로 튀는 작은 점들 */
+.s5 .dust {
+	width: 1.6cqw; height: 1.6cqw;
+	border-radius: 50%;
+	color: var(--ink);
+	box-shadow:
+		30cqw -8cqw, -26cqw -19cqw 0 .3cqw, 12cqw 31cqw, -33cqw 9cqw 0 -.3cqw, 21cqw -27cqw 0 .2cqw,
+		-9cqw -34cqw, -20cqw 26cqw 0 .4cqw, 35cqw 14cqw 0 -.2cqw, 3cqw -22cqw 0 -.4cqw, -14cqw 14cqw;
+	animation: s5-dust var(--boom) infinite;
+}
+/* 연기: 가장자리가 흐린 덩어리 */
+.s5 em {
+	width: var(--d); height: var(--d);
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 30%, #0000) 20%, #0000 100%);
+	animation: s5-smoke var(--boom) infinite;
+	animation-delay: var(--w, 0s);
+}
+.s5 em:nth-of-type(1) { --d: 52cqw; --x: -16cqw; --y: -20cqw; }
+.s5 em:nth-of-type(2) { --d: 64cqw; --x: 15cqw;  --y: -26cqw; --w: .05s; }
+.s5 em:nth-of-type(3) { --d: 44cqw; --x: -27cqw; --y: -2cqw;  --w: .09s; }
+.s5 em:nth-of-type(4) { --d: 48cqw; --x: 26cqw;  --y: -6cqw;  --w: .03s; }
+.s5 em:nth-of-type(5) { --d: 60cqw; --x: -4cqw;  --y: -34cqw; --w: .12s; }
+.s5 em:nth-of-type(6) { --d: 40cqw; --x: 6cqw;   --y: 12cqw;  --w: .07s; }
+/* 기울임꼴이라 글자가 오른쪽으로 치우치므로 중앙으로 보정 */
+.s5 b, .s5 i { position: relative; left: -4.15cqw; top: -1.5cqw; padding: 0 .12em; font-style: italic; }
+.s5 b { animation: s5-whole var(--boom) infinite; }
+.s5 i {
+	clip-path: polygon(var(--c));
+	opacity: 0;
+	animation: s5-fly var(--boom) infinite, s5-drop var(--boom) infinite;
+}
+.s5 i::before { content: "1"; }
+/* 몇 조각은 화면 앞으로 날아오듯 커짐 */
+.s5 i:nth-of-type(3n) { --s: 1.9; }
+.s5 i:nth-of-type(4n + 1) { --s: .7; }
 .s5 i:nth-of-type(1)  { --c: 0 0, 50% 0, 0 25%;             --x: -30cqw; --y: -42cqw; --r: -80deg; }
 .s5 i:nth-of-type(2)  { --c: 50% 0, 50% 25%, 0 25%;         --x: -12cqw; --y: -50cqw; --r: 60deg; }
 .s5 i:nth-of-type(3)  { --c: 50% 0, 100% 0, 100% 25%;       --x: 28cqw;  --y: -52cqw; --r: 120deg; }
@@ -364,33 +416,69 @@ footer a:hover { color: var(--text); }
 .s5 i:nth-of-type(14) { --c: 0 75%, 50% 100%, 0 100%;       --x: -38cqw; --y: 40cqw;  --r: -100deg; }
 .s5 i:nth-of-type(15) { --c: 50% 75%, 100% 75%, 50% 100%;   --x: 12cqw;  --y: 52cqw;  --r: 140deg; }
 .s5 i:nth-of-type(16) { --c: 100% 75%, 100% 100%, 50% 100%; --x: 36cqw;  --y: 42cqw;  --r: -70deg; }
-/* 떨다가 터짐 */
+/* 점점 세게 떨다가 움츠린 뒤 터짐 */
 @keyframes s5-whole {
 	0% { opacity: 0; transform: none; }
-	5%, 14% { opacity: 1; transform: none; }
-	17% { transform: translate(.5cqw, -.3cqw) rotate(-1deg); }
-	19% { transform: translate(-.6cqw, .3cqw) rotate(1.2deg); }
-	21% { transform: translate(.7cqw, .2cqw) rotate(-1.5deg) scale(1.02); }
-	23% { transform: translate(-.8cqw, -.4cqw) rotate(1.8deg) scale(1.04); }
-	25% { transform: translate(.9cqw, .4cqw) rotate(-2deg) scale(1.06); }
-	27.9% { opacity: 1; transform: scale(1.1); animation-timing-function: steps(1); }
-	28%, 100% { opacity: 0; transform: scale(1.1); }
+	5%, 12% { opacity: 1; transform: none; }
+	15% { transform: translate(.5cqw, -.3cqw) rotate(-1deg); }
+	17% { transform: translate(-.7cqw, .3cqw) rotate(1.4deg); }
+	19% { transform: translate(.9cqw, .3cqw) rotate(-1.8deg) scale(1.02); }
+	21% { transform: translate(-1.1cqw, -.5cqw) rotate(2.2deg) scale(1.04); }
+	23% { transform: translate(1.3cqw, .5cqw) rotate(-2.6deg) scale(1.06); }
+	25% { transform: translate(-1.4cqw, .4cqw) rotate(3deg) scale(1.08); }
+	27% { transform: translate(1.2cqw, -.4cqw) rotate(-2deg) scale(1.1); }
+	29.9% { opacity: 1; transform: scale(.88); animation-timing-function: steps(1); }
+	30%, 100% { opacity: 0; transform: scale(.88); }
 }
-/* 바깥으로는 감속, 아래로는 가속 */
+/* 바깥으로는 급감속, 아래로는 가속 */
 @keyframes s5-fly {
-	0%, 28% { translate: 0 0; animation-timing-function: cubic-bezier(.1, .6, .3, 1); }
-	68%, 100% { translate: var(--x) var(--y); }
+	0%, 30% { translate: 0 0; animation-timing-function: cubic-bezier(.03, .85, .15, 1); }
+	52%, 100% { translate: calc(var(--x) * 1.35) calc(var(--y) * 1.35); }
 }
 @keyframes s5-drop {
-	0%, 27.9% { opacity: 0; transform: none; }
-	28% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.5, 0, .9, .6); }
-	54% { opacity: 1; }
-	68%, 100% { opacity: 0; transform: translateY(26cqw) rotate(var(--r)); }
+	0%, 29.9% { opacity: 0; transform: none; }
+	30% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.55, 0, .9, .5); }
+	48% { opacity: 1; }
+	58%, 100% { opacity: 0; transform: translateY(46cqw) rotate(calc(var(--r) * 2.2)) scale(var(--s, 1)); }
+}
+@keyframes s5-flash {
+	0%, 29.9% { opacity: 0; }
+	30%, 31.6% { opacity: 1; }
+	31.7%, 100% { opacity: 0; }
+}
+@keyframes s5-burst {
+	0%, 29.9% { opacity: 0; transform: scale(.05); }
+	30% { opacity: 1; transform: scale(.05); animation-timing-function: cubic-bezier(.05, .8, .2, 1); }
+	33.5% { opacity: .9; }
+	38%, 100% { opacity: 0; transform: scale(1.5); }
 }
 @keyframes s5-ring {
-	0%, 27.9% { opacity: 0; transform: scale(.05); }
-	28% { opacity: .9; transform: scale(.05); animation-timing-function: cubic-bezier(.1, .6, .3, 1); }
-	52%, 100% { opacity: 0; transform: scale(1.1); }
+	0%, 29.9% { opacity: 0; transform: scale(.05); }
+	30% { opacity: .9; transform: scale(.05); animation-timing-function: cubic-bezier(.1, .6, .3, 1); }
+	42%, 100% { opacity: 0; transform: scale(1.5); }
+}
+@keyframes s5-dust {
+	0%, 29.9% { opacity: 0; transform: scale(.1); }
+	30% { opacity: 1; transform: scale(.1); animation-timing-function: cubic-bezier(.1, .7, .3, 1); }
+	42% { opacity: 1; }
+	50%, 100% { opacity: 0; transform: scale(1.9) translateY(6cqw); }
+}
+@keyframes s5-smoke {
+	0%, 32% { opacity: 0; transform: translate(calc(var(--x) * .2), calc(var(--y) * .2)) scale(.25); }
+	37% { opacity: 1; animation-timing-function: cubic-bezier(.2, .7, .3, 1); }
+	52% { opacity: .6; }
+	72%, 100% { opacity: 0; transform: translate(calc(var(--x) * 1.2), calc(var(--y) * 1.2 - 14cqw)) scale(1.3); }
+}
+/* 터지는 순간 화면 흔들림 */
+@keyframes s5-shake {
+	0%, 29.9%, 44%, 100% { transform: none; }
+	30.5% { transform: translate(-2.2cqw, 1.4cqw); }
+	32% { transform: translate(2cqw, -1.6cqw); }
+	33.5% { transform: translate(-1.6cqw, -1cqw); }
+	35% { transform: translate(1.4cqw, 1.2cqw); }
+	37% { transform: translate(-1cqw, .6cqw); }
+	39% { transform: translate(.7cqw, -.5cqw); }
+	41.5% { transform: translate(-.4cqw, .3cqw); }
 }
 
 /* ---------- 6. 아무 일도 일어나지 않는다 ---------- */
